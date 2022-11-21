@@ -1,7 +1,8 @@
 # Config file for metagenome-tax-pipe
 echo -e "Reading autopipe v.1 config.yaml"
-project_dir="/mnt/research/EvansLab/BenucciGMNico/metagenome-taxa-pipe"
+project_dir="/mnt/research/EvansLab/BenucciGMNico/metagenome-taxa-pipe" #change based on project directory
 cd $project_dir/rawdata/
+$MSUusername="benucci" #change based on MSU ID.
 
 # Databases
 NCBI_nt="/mnt/research/EvansLab/DATABASES/ncbi_newest"
