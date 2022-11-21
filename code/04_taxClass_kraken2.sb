@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=128
 #SBATCH --mem-per-cpu=6G
-#SBATCH --job-name 6taxkraken2
+#SBATCH --job-name 4taxkraken2
 
 cd ${SLURM_SUBMIT_DIR}
 cores="$SLURM_CPUS_PER_TASK"
@@ -15,8 +15,8 @@ echo -e "\n========== Project paths ==========\n"
 source config.yaml
 
 echo -e "\n========== Sub-directories ==========\n"
-echo -e "mkdir $project_dir/outputs/06_taxcalss_kraken2bracken"; mkdir $project_dir/outputs/06_taxcalss_kraken2bracken
-echo -e "cd $project_dir/outputs/05_trimmingadapters_fastp/"; cd $project_dir/outputs/05_trimmingadapters_fastp/
+echo -e "mkdir $project_dir/outputs/04_taxcalss_kraken2bracken"; mkdir $project_dir/outputs/04_taxcalss_kraken2bracken
+echo -e "cd $project_dir/outputs/03_trimmingadapters_fastp/"; cd $project_dir/outputs/03_trimmingadapters_fastp/
 
 
 #Making a list of all the samples in the trimemd dir
@@ -34,11 +34,11 @@ do
 		--threads $cores \
 		--report-zero-counts \
 		--use-names \
-		--report $project_dir/outputs/06_taxcalss_kraken2bracken/${file}_kraken2.report \
-		--output $project_dir/outputs/06_taxcalss_kraken2bracken/${file}_kraken2.output
+		--report $project_dir/outputs/04_taxcalss_kraken2bracken/${file}_kraken2.report \
+		--output $project_dir/outputs/04_taxcalss_kraken2bracken/${file}_kraken2.output
 done
 
-cd $project_dir/outputs/06_taxcalss_kraken2bracken/
+cd $project_dir/outputs/04_taxcalss_kraken2bracken/
 
 for report in `ls *kraken2.report` 
 do 
@@ -51,7 +51,7 @@ do
 		-l G \
 		-d $minikraken2_db \
 		-i $report \
-		-o $project_dir/outputs/06_taxcalss_kraken2bracken/${report//kraken2.report/bracken.report}
+		-o $project_dir/outputs/04_taxcalss_kraken2bracken/${report//kraken2.report/bracken.report}
 	conda deactivate
 done
 
@@ -62,4 +62,4 @@ echo -e "\n========== Sbatch log ==========\n"
 echo -e "\n Current directory: `pwd` \n"
 echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
 scontrol show job $SLURM_JOB_ID
-mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/06_kraken2-taxclass.slurm
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/04_kraken2-taxclass.slurm
