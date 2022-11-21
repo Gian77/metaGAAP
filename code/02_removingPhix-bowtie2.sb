@@ -20,7 +20,7 @@ source ../config.yaml
 echo -e "\n Running script: 02_removingPhix-bowtie2.sb \n"
 
 echo -e "\n========== Sub-directories ==========\n"
-echo "mkdir $project_dir/outputs/04_removePhix_bowtie2/"; mkdir $project_dir/outputs/04_removePhix_bowtie2/
+echo "mkdir $project_dir/outputs/02_removePhix_bowtie2/"; mkdir $project_dir/outputs/02_removePhix_bowtie2/
 echo "cd $project_dir/rawdata/"; cd $project_dir/rawdata/
 
 echo -e "\n========== Generating file list and then counting raw reads ==========\n"
@@ -46,24 +46,24 @@ do read R2
 		-1 $R1 \
 		-2 $R2 \
 		-p $cores \
-		--un-conc $project_dir/outputs/04_removePhix_bowtie2/${name}.fastq \
-		-S $project_dir/outputs/04_removePhix_bowtie2/${name}contaminated_align.sam \
+		--un-conc $project_dir/outputs/02_removePhix_bowtie2/${name}.fastq \
+		-S $project_dir/outputs/02_removePhix_bowtie2/${name}contaminated_align.sam \
 		--local
 
 	conda deactivate
 
-	mv $project_dir/outputs/04_removePhix_bowtie2/*.1.fastq $project_dir/outputs/04_removePhix_bowtie2/${name}R1.fastq
-	mv $project_dir/outputs/04_removePhix_bowtie2/*.2.fastq $project_dir/outputs/04_removePhix_bowtie2/${name}R2.fastq
+	mv $project_dir/outputs/02_removePhix_bowtie2/*.1.fastq $project_dir/outputs/02_removePhix_bowtie2/${name}R1.fastq
+	mv $project_dir/outputs/02_removePhix_bowtie2/*.2.fastq $project_dir/outputs/02_removePhix_bowtie2/${name}R2.fastq
 
 done < bowtie2.list
 
-rm $project_dir/outputs/04_removePhix_bowtie2/*contaminated_align.sam
+rm $project_dir/outputs/02_removePhix_bowtie2/*contaminated_align.sam
 
 # --local "trim" or "clip" some read characters from one or both ends of the alignment.
 # --un-conc Write paired-end reads that fail to align concordantly to file(s) at <path>. 
 # --al-conc Write paired-end reads that align concordantly at least once to file(s) at <path>. 
 echo -e "\n========== Counting filtered reads ==========\n"
-cd $project_dir/outputs/04_removePhix_bowtie2/
+cd $project_dir/outputs/02_removePhix_bowtie2/
 for file in *_R*.fastq
 do
 	echo "$file : `echo $(cat ${file} | wc -l)/4 | bc`"
@@ -73,4 +73,4 @@ echo -e "\n========== Sbatch log ==========\n"
 echo -e "\n Current directory: `pwd` \n"
 echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
 scontrol show job $SLURM_JOB_ID
-mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/04_removingPhix-bowtie2.slurm
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/02_removingPhix-bowtie2.slurm
