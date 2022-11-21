@@ -1,5 +1,3 @@
-config.yaml
-
 # Rawdata
 rawdata/*.fastq
 rawdata/*.fastq.gz
