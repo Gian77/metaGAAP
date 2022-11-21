@@ -1,0 +1,52 @@
+#!/bin/bash -login
+
+#SBATCH --time=12:00:00
+#SBATCH --nodes=1-2
+#SBATCH --ntasks=2
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=256G
+#SBATCH --job-name 6bbcms
+
+cd ${SLURM_SUBMIT_DIR}
+cores="$SLURM_CPUS_PER_TASK"
+RAM="$SLURM_MEM_PER_NODE"
+
+echo -e "\n========== Project paths ==========\n"
+source ../config.yaml
+
+echo -e "\n I am running: 06_errorCorrection_bbmap.sb \n"
+
+echo -e "\n========== Sub-directories ==========\n"
+if [ -d $project_dir/outputs/06_errorCorrected_bbmap/ ]; then
+	echo -e "\n Directory exist! I performed this step already. Exiting... \n"
+else
+	echo "mkdir $project_dir/outputs/06_errorCorrected_bbmap"; mkdir $project_dir/outputs/06_errorCorrected_bbmap
+	echo "cd $project_dir/outputs/03_trimmingadapters_fastp/"; cd $project_dir/outputs/03_trimmingadapters_fastp/
+
+	echo -e "\n========== Genome assembly with Spades ==========\n"
+	conda activate bbmap
+	echo -e "BBmap version: `bbversion.sh`" 
+
+	while read R1
+		do read R2
+		echo -e "\n========== Assembling genome: $R1 ==========\n"
+		
+		bbcms.sh \
+			in=$R1 \
+			in2=$R2 \
+			out=$project_dir/outputs/06_errorCorrected_bbmap/${R1//__trimmed_R1.fastq/_corrected_R1.fastq} \
+			out2=$project_dir/outputs/06_errorCorrected_bbmap/${R2//__trimmed_R2.fastq/_corrected_R2.fastq} \
+			mincount=2 \
+			hcf=0.6 \
+			tossjunk=t \
+			ecc=t \
+			bits=4
+	done < spades.list
+	conda deactivate
+fi
+
+echo -e "\n========== Sbatch log ==========\n"
+echo -e "\n Current directory: `pwd` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+scontrol show job $SLURM_JOB_ID
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/06_errorCorrection-bbmap.slurm
