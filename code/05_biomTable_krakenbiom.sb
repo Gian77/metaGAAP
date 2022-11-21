@@ -1,0 +1,37 @@
+#!/bin/bash -login
+
+#SBATCH --time=00:05:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=16G
+#SBATCH --job-name 7krabiom
+
+cd ${SLURM_SUBMIT_DIR}
+cores="$SLURM_CPUS_PER_TASK"
+RAM_CPU="$SLURM_MEM_PER_CPU"
+
+echo -e "\n========== Project paths ==========\n"
+source config.yaml
+
+echo -e "\n========== Sub-directories ==========\n"
+echo -e "mkdir $project_dir/outputs/07_biomTable_krakenbiom"; mkdir $project_dir/outputs/07_biomTable_krakenbiom
+echo -e "cd $project_dir/outputs/06_taxcalss_kraken2bracken/"; cd $project_dir/outputs/06_taxcalss_kraken2bracken/
+
+echo -e "\n========== Creating a biom table using kraken-biom  ==========\n" 
+conda activate kraken-biom
+echo "kraken-biom version: `kraken-biom --version`"
+	
+kraken-biom \
+	*kraken2.report \
+	--verbose \
+	--fmt json \
+	--output $project_dir/outputs/07_biomTable_krakenbiom/taxclass.json.biom
+
+conda deactivate
+
+echo -e "\n========== Sbatch log ==========\n"
+echo -e "\n Current directory: `pwd` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+scontrol show job $SLURM_JOB_ID
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/07_kraken-biom.slurm
