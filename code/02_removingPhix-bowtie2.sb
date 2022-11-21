@@ -6,7 +6,6 @@
 #SBATCH --cpus-per-task=128
 #SBATCH --mem=256G  
 #SBATCH --job-name 4bowtie2
-#SBATCH -A shade-cole-bonito
 
 cd ${SLURM_SUBMIT_DIR}
 cores=$SLURM_CPUS_PER_TASK
@@ -72,6 +71,6 @@ done > nophix.counts
 
 echo -e "\n========== Sbatch log ==========\n"
 echo -e "\n Current directory: `pwd` \n"
-echo -e "\n `sacct -u benucci -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
 scontrol show job $SLURM_JOB_ID
 mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/04_removingPhix-bowtie2.slurm
