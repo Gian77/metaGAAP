@@ -29,7 +29,7 @@ do
 	echo "Kraken version: `kraken2 --version`"
 	
 	kraken2 \
-		--db $minikraken2_db \
+		--db $kraken2_db \
 		--paired ${file}1.fastq ${file}2.fastq \
 		--threads $cores \
 		--report-zero-counts \
@@ -49,7 +49,7 @@ do
 	bracken \
 		-r 100 \
 		-l G \
-		-d $minikraken2_db \
+		-d $kraken2_db \
 		-i $report \
 		-o $project_dir/outputs/04_taxcalss_kraken2bracken/${report//kraken2.report/bracken.report}
 	conda deactivate
