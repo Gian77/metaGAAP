@@ -12,7 +12,7 @@ cores="$SLURM_CPUS_PER_TASK"
 RAM_CPU="$SLURM_MEM_PER_CPU"
 
 echo -e "\n========== Project paths ==========\n"
-source config.yaml
+source ../config.yaml
 
 echo -e "\n========== Sub-directories ==========\n"
 echo -e "mkdir $project_dir/outputs/04_taxcalss_kraken2bracken"; mkdir $project_dir/outputs/04_taxcalss_kraken2bracken
