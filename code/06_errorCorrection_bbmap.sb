@@ -23,13 +23,13 @@ else
 	echo "mkdir $project_dir/outputs/06_errorCorrected_bbmap"; mkdir $project_dir/outputs/06_errorCorrected_bbmap
 	echo "cd $project_dir/outputs/03_trimmingadapters_fastp/"; cd $project_dir/outputs/03_trimmingadapters_fastp/
 
-	echo -e "\n========== Genome assembly with Spades ==========\n"
+	echo -e "\n========== Error correction with bbmap ==========\n"
 	conda activate bbmap
 	echo -e "BBmap version: `bbversion.sh`" 
 
 	while read R1
 		do read R2
-		echo -e "\n========== Assembling genome: $R1 ==========\n"
+		echo -e "\n========== Error correction: $R1 ==========\n"
 		
 		bbcms.sh \
 			in=$R1 \
