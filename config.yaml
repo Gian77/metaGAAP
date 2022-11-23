@@ -1,20 +1,29 @@
-# Config file for metagenome-tax-pipe
-echo -e "Reading autopipe v.1 config.yaml"
-project_dir="/mnt/home/jones514/metaGAAP" #change based on project directory
+#************************ GAAP-BI v. 1.0 config file *************************#
+
+#********** MIT LICENSE - Copyright © 2022 Benucci Jones Broderick ***********#
+#********************* email: benucci[at]msu[dot]edu *************************#
+
+#********************** metaGAAP v1.0 config file ****************************#
+echo -e "Reading metaGAAP-v.1.0.sh config.yaml"
+
+# Change based on user HPCC account. Deafult project directory is metaGAAP
+project_dir="/mnt/home/jones514/metaGAAP" 
+
+# Default to rawdata directory
 cd $project_dir/rawdata/
-MSUusername="jones514" #change based on MSU ID.
+
+# Change your username based on MSU ID 
+MSUusername="jones514"
 
 # Databases
 NCBI_nt="/mnt/research/EvansLab/DATABASES/ncbi_newest"
 kraken2_db="/mnt/research/EvansLab/DATABASES/kraken2_db"
 phix_db="/mnt/research/EvansLab/DATABASES/phix_db/my_phix"
 
-# Running Parameters
+# Running Parameters. If not numeric (i.e. float) then 'yes' or 'no'.
 LENGTH=1000
 COVERAGE=0.01
 
-# minikraken2_db="/mnt/research/ShadeLab/Benucci/databases/minikraken2_db"
-# dmnd_bac="/mnt/research/ShadeLab/Benucci/databases/emapperdb/eggdb_bacteria.dmnd"
-
-
-
+# PATHs
+export EGGNOG_DATA_DIR=/mnt/research/ShadeLab/Benucci/databases/emapperdb/
+#****************************************************************************#
