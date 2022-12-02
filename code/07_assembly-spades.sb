@@ -7,7 +7,6 @@
 #SBATCH --mem=512G
 #SBATCH --job-name 7spades
 
-echo "SBACTH -A shade-cole-bonito"
 
 cd ${SLURM_SUBMIT_DIR}
 cores="$SLURM_CPUS_PER_TASK"
