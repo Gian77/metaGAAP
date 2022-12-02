@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=64
 #SBATCH --mem=512G
-#SBATCH --job-name 6spades
+#SBATCH --job-name 7spades
 
 echo "SBACTH -A shade-cole-bonito"
 
@@ -16,11 +16,11 @@ RAM="$SLURM_MEM_PER_NODE"
 echo -e "\n========== Project paths ==========\n"
 source ../config.yaml
 
-echo -e "\n I am running: 09_assembly-spades.sb \n"
+echo -e "\n I am running: 07_assembly-spades.sb \n"
 
 echo -e "\n========== Sub-directories ==========\n"
-echo "mkdir $project_dir/outputs/09_assembly_spades"; mkdir $project_dir/outputs/09_assembly_spades
-echo "cd $project_dir/outputs/08_errorCorrected_bbmap/"; cd $project_dir/outputs/08_errorCorrected_bbmap/
+echo "mkdir $project_dir/outputs/07_assembly_spades"; mkdir $project_dir/outputs/07_assembly_spades
+echo "cd $project_dir/outputs/06_errorCorrected_bbmap/"; cd $project_dir/outputs/06_errorCorrected_bbmap/
 
 echo -e "\n========== Genome assembly with Spades ==========\n"
 
@@ -32,7 +32,7 @@ echo -e "Spades version: `spades.py --version`"
 while read R1
 	do read R2
 	echo -e "\n========== Assembling genome: $R1 ==========\n"
-	mkdir $project_dir/outputs/09_assembly_spades/${R1//_corrected_R1.fastq/}/
+	mkdir $project_dir/outputs/07_assembly_spades/${R1//_corrected_R1.fastq/}/
 	
 	spades.py \
 		-t $cores \
@@ -42,10 +42,10 @@ while read R1
 		--only-assembler \
 		--pe1-1 $R1 \
 		--pe1-2 $R2 \
-		-o $project_dir/outputs/09_assembly_spades/${R1//_corrected_R1.fastq/}/
+		-o $project_dir/outputs/07_assembly_spades/${R1//_corrected_R1.fastq/}/
 
-	grep "^>NODE" $project_dir/outputs/09_assembly_spades/${R1//_corrected_R1.fastq/}/contigs.fasta \
-		| sed 's/_length_/\t/;s/_cov_/\t/' > $project_dir/outputs/09_assembly_spades/${R1//_corrected_R1.fastq/}/contigs.covlength
+	grep "^>NODE" $project_dir/outputs/07_assembly_spades/${R1//_corrected_R1.fastq/}/contigs.fasta \
+		| sed 's/_length_/\t/;s/_cov_/\t/' > $project_dir/outputs/07_assembly_spades/${R1//_corrected_R1.fastq/}/contigs.covlength
 
 done < corrected.list
 
@@ -54,6 +54,6 @@ conda deactivate
 
 echo -e "\n========== Sbatch log ==========\n"
 echo -e "\n Current directory: `pwd` \n"
-echo -e "\n `sacct -u benucci -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
 scontrol show job $SLURM_JOB_ID
-mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/09_assembly-spades.slurm
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/07_assembly-spades.slurm
