@@ -1,6 +1,6 @@
 #!/bin/bash -login
 
-#SBATCH --time=12:00:00
+#SBATCH --time=03:00:00
 #SBATCH --nodes=1-2
 #SBATCH --ntasks=2
 #SBATCH --cpus-per-task=32
@@ -34,10 +34,10 @@ else
 		bbcms.sh \
 			in=$R1 \
 			in2=$R2 \
-			out=$project_dir/outputs/06_errorCorrected_bbmap/${R1//__trimmed_R1.fastq/_corrected_R1.fastq} \
-			out2=$project_dir/outputs/06_errorCorrected_bbmap/${R2//__trimmed_R2.fastq/_corrected_R2.fastq} \
+			out=$project_dir/outputs/06_errorCorrected_bbmap/${R1//_trimmed_R1.fastq/_corrected_R1.fastq} \
+			out2=$project_dir/outputs/06_errorCorrected_bbmap/${R2//_trimmed_R2.fastq/_corrected_R2.fastq} \
 			mincount=2 \
-			hcf=0.6 \
+			hcf=0.4 \
 			tossjunk=t \
 			ecc=t \
 			bits=4
