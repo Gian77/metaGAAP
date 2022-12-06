@@ -69,6 +69,10 @@ do
 	echo "$file : `echo $(cat ${file} | wc -l)/4 | bc`"
 done > nophix.counts
 
+
+echo -e "\n========== Number of sequences per file ==========\n"
+for i in $(find $project_dir/outputs/02_removePhix_bowtie2/ -type f -name "*.fastq"); do echo "$i : `echo $(cat ${i} | wc -l)/4 | bc`"; done
+
 echo -e "\n========== Sbatch log ==========\n"
 echo -e "\n Current directory: `pwd` \n"
 echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
