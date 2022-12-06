@@ -48,6 +48,9 @@ do
 	fi
 done
 
+echo -e "\n========== List of sequences per file ==========\n"
+for i in $(find $project_dir/rawdata/ -type f -name "*.fastq"); do echo "$i : `echo $(cat ${i} | wc -l)/4 | bc`"; done
+
 echo -e "\n========== Sbatch log ==========\n"
 echo -e "\n Current directory: `pwd` \n"
 echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
