@@ -36,6 +36,8 @@ else
 			in2=$R2 \
 			out=$project_dir/outputs/06_errorCorrected_bbmap/${R1//_trimmed_R1.fastq/_corrected_R1.fastq} \
 			out2=$project_dir/outputs/06_errorCorrected_bbmap/${R2//_trimmed_R2.fastq/_corrected_R2.fastq} \
+			outb=$project_dir/outputs/06_errorCorrected_bbmap/${R1//_trimmed_R1.fastq/_mincount_fail_R1.fastq} \
+			outb2=$project_dir/outputs/06_errorCorrected_bbmap/${R2//_trimmed_R2.fastq/_mincount_fail_R2.fastq} \
 			mincount=2 \
 			hcf=0.4 \
 			tossjunk=t \
@@ -44,6 +46,9 @@ else
 	done < spades.list
 	conda deactivate
 fi
+
+echo -e "\n========== Number of sequences per file ==========\n"
+for i in $(find $project_dir/outputs/06_errorCorrected_bbmap/ -type f -name "*.fastq"); do echo "$i : `echo $(cat ${i} | wc -l)/4 | bc`"; done
 
 echo -e "\n========== Sbatch log ==========\n"
 echo -e "\n Current directory: `pwd` \n"
