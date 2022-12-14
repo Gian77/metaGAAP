@@ -1,0 +1,59 @@
+#!/bin/bash -login
+
+#SBATCH --time=00:59:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=128G
+#SBATCH --job-name 08quast
+
+echo "SBACTH -A shade-cole-bonito"
+
+cd ${SLURM_SUBMIT_DIR}
+cores="$SLURM_CPUS_PER_TASK"
+RAM="$SLURM_MEM_PER_NODE"
+
+echo -e "\n========== Project paths ==========\n"
+source ../config.yaml
+
+echo -e "\n I am running: 08_evaluateContigs_metaquast.sb \n"
+
+echo -e "\n========== Sub-directories ==========\n"
+echo "mkdir $project_dir/outputs/08_evaluateContigs_metaquast/"; mkdir $project_dir/outputs/08_evaluateContigs_metaquast/
+echo "mkdir $project_dir/outputs/08_evaluateContigs_metaquast/contigs_table/"; mkdir $project_dir/outputs/08_evaluateContigs_metaquast/contigs_table/
+echo "cd $project_dir/outputs/07_assembly_spades/"; cd $project_dir/outputs/07_assembly_spades/
+
+echo -e "\n========== Genome assembly with Spades ==========\n"
+
+for file in $(find $project_dir/outputs/07_assembly_spades/ -type f -name "contigs_hq.fasta"); do
+	
+	output_dir=$(echo $file | cut -d"/" -f8) #f8 needs to change depending on the level of directory
+
+	conda activate quast
+	echo "version of `quast --version`" 
+	metaquast.py \
+		--threads $cores \
+		--no-icarus \
+		$project_dir/outputs/07_assembly_spades/${output_dir}/contigs_hq.fasta \
+		-o $project_dir/outputs/08_evaluateContigs_metaquast/${output_dir}/	
+	conda deactivate
+
+	cp $project_dir/outputs/08_evaluateContigs_metaquast/${output_dir}/combined_reference/report.tsv $project_dir/outputs/08_evaluateContigs_metaquast/contigs_table/"$output_dir"_quast.report
+
+done
+
+# Phyton code from https://github.com/npbhavya
+python $project_dir/code/quast2table.py \
+	-d $project_dir/outputs/08_evaluateContigs_metaquast/contigs_table/ \
+	-o $project_dir/outputs/08_evaluateContigs_metaquast/contigs_table/quast_output.tsv
+
+echo -e "\n========== Sbatch log ==========\n"
+echo -e "\n Current directory: `pwd` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+scontrol show job $SLURM_JOB_ID
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/08_evaluateContigs-quast.slurm
+
+
+
+
+
