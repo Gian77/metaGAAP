@@ -1,0 +1,84 @@
+#!/bin/bash -login
+
+#SBATCH --time=03:59:00
+#SBATCH --nodes=1-2
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=80
+#SBATCH --mem=256G
+#SBATCH --job-name 09prepCont
+
+echo "SBACTH -A shade-cole-bonito"
+
+cd ${SLURM_SUBMIT_DIR}
+cores="$SLURM_CPUS_PER_TASK"
+RAM="$SLURM_MEM_PER_NODE"
+
+echo -e "\n========== Project paths ==========\n"
+source ../config.yaml
+
+echo -e "\n I am running: 09_prepareContigs-bowtie2-samtools.sb \n"
+
+echo -e "\n========== Sub-directories ==========\n"
+echo "cd $project_dir/outputs/07_assembly_spades/"; cd $project_dir/outputs/07_assembly_spades/
+echo "mkdir -p $project_dir/outputs/09_contigsBinning/"; mkdir -p $project_dir/outputs/09_contigsBinning/
+
+echo -e "\n========== Indexing contigs and mapping to reads ==========\n"
+
+for file in $(find $project_dir/outputs/07_assembly_spades/ -type f -name "contigs_hq.fasta"); do
+	
+	output_dir=$(echo $file | cut -d"/" -f8) # need to change based on the number of levels in the directory
+	mkdir $project_dir/outputs/09_contigsBinning/${output_dir}/
+
+	echo -e "\n========== bowtie2 sort for sample: $output_dir ==========\n" 
+	conda activate bowtie2
+	echo -e "Bowtie2 version: `bowtie2 --version`" 
+
+	# binning
+	bowtie2-build \
+	--threads $cores \
+		-f $project_dir/outputs/07_assembly_spades/${output_dir}/contigs_hq.fasta \
+		$project_dir/outputs/09_contigsBinning/${output_dir}/bowtie2-index
+	
+	bowtie2 \
+	--threads $cores \
+		--time \
+		-x $project_dir/outputs/09_contigsBinning/${output_dir}/bowtie2-index \
+		-1 $project_dir/rawdata/"$output_dir"_L003_R1_001.fastq \
+		-2 $project_dir/rawdata/"$output_dir"_L003_R2_001.fastq \
+		-S $project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir".sam
+	
+	conda deactivate
+	
+	echo -e "\n========== samtools sort for sample: $output_dir ==========\n" 
+	conda activate samtools
+	echo -e "samtools version: `samtools --version`" 
+
+	samtools view \
+		-@ $cores \
+		-b \
+		--with-header \
+		-S $project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir".sam \
+		--output $project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir".bam
+
+	samtools sort \
+		-@ $cores \
+		$project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir".bam \
+		-o $project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir"_sorted.bam
+	
+	samtools index \
+		-@ $cores \
+		-b \
+		$project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir"_sorted.bam
+
+	#adding this remove step since bam can always be converted to sam, and sam files take too much space.
+	rm $project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir".sam
+	rm $project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir".bam
+	
+	conda deactivate
+done 
+
+echo -e "\n========== Sbatch log ==========\n"
+echo -e "\n Current directory: `pwd` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+scontrol show job $SLURM_JOB_ID
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/09_prepareContigs-bowtie2-samtools.slurm
