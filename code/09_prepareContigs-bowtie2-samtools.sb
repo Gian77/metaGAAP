@@ -7,8 +7,6 @@
 #SBATCH --mem=256G
 #SBATCH --job-name 09prepCont
 
-echo "SBACTH -A shade-cole-bonito"
-
 cd ${SLURM_SUBMIT_DIR}
 cores="$SLURM_CPUS_PER_TASK"
 RAM="$SLURM_MEM_PER_NODE"
