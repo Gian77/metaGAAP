@@ -33,7 +33,6 @@ for file in $(find $project_dir/outputs/07_assembly_spades/ -type f -name "conti
 
 	# binning
 	bowtie2-build \
-	--threads $cores \
 		-f $project_dir/outputs/07_assembly_spades/${output_dir}/contigs_hq.fasta \
 		$project_dir/outputs/09_contigsBinning/${output_dir}/bowtie2-index
 	
