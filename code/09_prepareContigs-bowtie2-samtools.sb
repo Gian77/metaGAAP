@@ -37,7 +37,7 @@ for file in $(find $project_dir/outputs/07_assembly_spades/ -type f -name "conti
 		$project_dir/outputs/09_contigsBinning/${output_dir}/bowtie2-index
 	
 	bowtie2 \
-	--threads $cores \
+		--threads $cores \
 		--time \
 		-x $project_dir/outputs/09_contigsBinning/${output_dir}/bowtie2-index \
 		-1 $project_dir/rawdata/"$output_dir"_L003_R1_001.fastq \
@@ -52,10 +52,9 @@ for file in $(find $project_dir/outputs/07_assembly_spades/ -type f -name "conti
 
 	samtools view \
 		-@ $cores \
-		-b \
-		--with-header \
+		-bo $project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir".bam \
+		-h \
 		-S $project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir".sam \
-		--output $project_dir/outputs/09_contigsBinning/${output_dir}/"$output_dir".bam
 
 	samtools sort \
 		-@ $cores \
