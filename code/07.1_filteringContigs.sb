@@ -42,14 +42,19 @@ for file in $(find $project_dir/outputs/07_assembly_spades/ -type f -name "conti
 	Rscript $project_dir/code/plotContigsCovLength.R
 	conda deactivate
 
-	echo -e "\n========= Number of contigs pre-filtering =========\n"
-	grep -c '^[[:space:]]*>' $project_dir/outputs/07_assembly_spades/${sample_dir}/contigs.fasta
-
-	echo -e "\n========= Number of contigs post-filtering =========\n"
-	grep -c '^[[:space:]]*>' $project_dir/outputs/07_assembly_spades/${sample_dir}/contigs_hq.fasta
 
 done
 
+	echo -e "\n========= Number of contigs per file =========\n"
+
+for file in $(find $project_dir/outputs/07_assembly_spades/ -type f -name "contigs.fasta"); do
+	sample_dir=$(echo $file | cut -d"/" -f8) #need to adjust based on directory levels below working directory
+
+	echo "$project_dir/outputs/07_assembly_spades/${sample_dir}/contigs.fasta": `grep -c '^[[:space:]]*>' $project_dir/outputs/07_assembly_spades/${sample_dir}/contigs.fasta`;
+
+	echo "$project_dir/outputs/07_assembly_spades/${sample_dir}/contigs_hq.fasta": `grep -c '^[[:space:]]*>' $project_dir/outputs/07_assembly_spades/${sample_dir}/contigs_hq.fasta`
+
+done
 
 echo -e "\n========== Sbatch log ==========\n"
 echo -e "\n Current directory: `pwd` \n"
