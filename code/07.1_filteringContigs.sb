@@ -49,10 +49,11 @@ done
 
 for file in $(find $project_dir/outputs/07_assembly_spades/ -type f -name "contigs.fasta"); do
 	sample_dir=$(echo $file | cut -d"/" -f8) #need to adjust based on directory levels below working directory
-
+	echo $file | cut -d"/" -f8
 	echo "$project_dir/outputs/07_assembly_spades/${sample_dir}/contigs.fasta": `grep -c '^[[:space:]]*>' $project_dir/outputs/07_assembly_spades/${sample_dir}/contigs.fasta`;
 
 	echo "$project_dir/outputs/07_assembly_spades/${sample_dir}/contigs_hq.fasta": `grep -c '^[[:space:]]*>' $project_dir/outputs/07_assembly_spades/${sample_dir}/contigs_hq.fasta`
+	echo -e "\n"
 
 done
 
